@@ -124,12 +124,6 @@ npm run start
 npm run lint
 ```
 
-## Current Limitations
-
-- No backend or database integration yet
-- Data is stored in React state and resets on refresh
-- No authentication or role-based access
-- Payroll rules are simplified for demonstration
 
 ## Recommended Next Enhancements
 
