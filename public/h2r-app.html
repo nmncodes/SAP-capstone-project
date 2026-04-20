@@ -1,0 +1,855 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Hire-to-Retire (H2R) - Employee Lifecycle Manager</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            padding: 20px;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+
+        header {
+            text-align: center;
+            color: white;
+            margin-bottom: 40px;
+        }
+
+        header h1 {
+            font-size: 2.5em;
+            margin-bottom: 10px;
+            text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.3);
+        }
+
+        header p {
+            font-size: 1.1em;
+            opacity: 0.95;
+        }
+
+        .process-flow {
+            background: white;
+            border-radius: 15px;
+            padding: 40px;
+            margin-bottom: 40px;
+            box-shadow: 0 10px 40px rgba(0, 0, 0, 0.1);
+        }
+
+        .steps-container {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 50px;
+            flex-wrap: wrap;
+            gap: 10px;
+        }
+
+        .step {
+            flex: 1;
+            min-width: 120px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            position: relative;
+        }
+
+        .step:hover .step-circle {
+            transform: scale(1.1);
+            box-shadow: 0 5px 20px rgba(102, 126, 234, 0.4);
+        }
+
+        .step-circle {
+            width: 80px;
+            height: 80px;
+            border-radius: 50%;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: bold;
+            font-size: 2em;
+            margin-bottom: 15px;
+            box-shadow: 0 3px 10px rgba(102, 126, 234, 0.2);
+            transition: all 0.3s ease;
+        }
+
+        .step.active .step-circle {
+            background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);
+            transform: scale(1.15);
+            box-shadow: 0 8px 25px rgba(245, 87, 108, 0.4);
+        }
+
+        .step-label {
+            text-align: center;
+            font-size: 0.9em;
+            font-weight: 600;
+            color: #333;
+            line-height: 1.3;
+        }
+
+        .step.active .step-label {
+            color: #f5576c;
+            font-weight: 700;
+        }
+
+        .arrow {
+            flex: 0.5;
+            height: 3px;
+            background: linear-gradient(90deg, #667eea, #764ba2);
+            margin: 0 5px;
+            opacity: 0.6;
+        }
+
+        @media (max-width: 1024px) {
+            .arrow {
+                flex: 0.3;
+                margin: 0 2px;
+            }
+
+            .step-circle {
+                width: 60px;
+                height: 60px;
+                font-size: 1.5em;
+            }
+
+            .step-label {
+                font-size: 0.8em;
+            }
+        }
+
+        @media (max-width: 768px) {
+            .steps-container {
+                flex-direction: column;
+                gap: 20px;
+            }
+
+            .arrow {
+                display: none;
+            }
+
+            header h1 {
+                font-size: 1.8em;
+            }
+        }
+
+        .details-section {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 30px;
+            min-height: 400px;
+        }
+
+        .step-details {
+            display: none;
+            animation: fadeIn 0.3s ease;
+        }
+
+        .step-details.active {
+            display: block;
+        }
+
+        @keyframes fadeIn {
+            from {
+                opacity: 0;
+                transform: translateY(10px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .detail-card {
+            background: #f8f9fa;
+            border-left: 5px solid #667eea;
+            padding: 25px;
+            border-radius: 10px;
+            transition: all 0.3s ease;
+        }
+
+        .detail-card h3 {
+            color: #667eea;
+            margin-bottom: 15px;
+            font-size: 1.3em;
+        }
+
+        .detail-card p {
+            color: #555;
+            line-height: 1.6;
+            margin-bottom: 15px;
+        }
+
+        .detail-list {
+            list-style: none;
+        }
+
+        .detail-list li {
+            color: #666;
+            padding: 8px 0;
+            border-bottom: 1px solid #e0e0e0;
+            padding-left: 25px;
+            position: relative;
+        }
+
+        .detail-list li:last-child {
+            border-bottom: none;
+        }
+
+        .detail-list li:before {
+            content: ">";
+            position: absolute;
+            left: 0;
+            color: #667eea;
+            font-weight: bold;
+        }
+
+        .info-box {
+            background: linear-gradient(135deg, #667eea15, #764ba215);
+            border: 1px solid #667eea30;
+            padding: 20px;
+            border-radius: 8px;
+            margin-bottom: 20px;
+        }
+
+        .info-box h4 {
+            color: #667eea;
+            margin-bottom: 10px;
+            font-size: 1.1em;
+        }
+
+        .info-box p {
+            color: #555;
+            font-size: 0.95em;
+            line-height: 1.5;
+        }
+
+        .transaction-table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 15px;
+        }
+
+        .transaction-table th {
+            background: #667eea;
+            color: white;
+            padding: 12px;
+            text-align: left;
+            font-weight: 600;
+        }
+
+        .transaction-table td {
+            padding: 10px 12px;
+            border-bottom: 1px solid #e0e0e0;
+        }
+
+        .transaction-table tr:hover {
+            background: #f8f9fa;
+        }
+
+        .transaction-code {
+            font-family: 'Courier New', monospace;
+            background: #f0f0f0;
+            padding: 3px 6px;
+            border-radius: 3px;
+            font-weight: 600;
+            color: #667eea;
+        }
+
+        .legend {
+            display: flex;
+            gap: 20px;
+            margin-top: 30px;
+            padding-top: 20px;
+            border-top: 2px solid #e0e0e0;
+            flex-wrap: wrap;
+        }
+
+        .legend-item {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            font-size: 0.9em;
+            color: #666;
+        }
+
+        .legend-color {
+            width: 20px;
+            height: 20px;
+            border-radius: 3px;
+        }
+
+        .action-buttons {
+            display: flex;
+            gap: 15px;
+            margin-top: 30px;
+        }
+
+        .btn {
+            padding: 12px 24px;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            font-weight: 600;
+            font-size: 1em;
+            transition: all 0.3s ease;
+        }
+
+        .btn-primary {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+        }
+
+        .btn-primary:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 20px rgba(102, 126, 234, 0.4);
+        }
+
+        .btn-secondary {
+            background: #f8f9fa;
+            color: #667eea;
+            border: 2px solid #667eea;
+        }
+
+        .btn-secondary:hover {
+            background: #667eea;
+            color: white;
+        }
+
+        footer {
+            text-align: center;
+            color: white;
+            margin-top: 40px;
+            font-size: 0.95em;
+            opacity: 0.9;
+        }
+
+        .step-count {
+            display: inline-block;
+            background: rgba(255, 255, 255, 0.2);
+            color: white;
+            padding: 8px 16px;
+            border-radius: 20px;
+            margin-bottom: 20px;
+            font-size: 0.9em;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <header>
+            <h1>Hire-to-Retire (H2R)</h1>
+            <p>Complete Employee Lifecycle Management in SAP HR</p>
+        </header>
+
+        <div class="process-flow">
+            <div class="step-count">Click on any step to view details</div>
+
+            <div class="steps-container">
+                <div class="step active" data-step="1">
+                    <div class="step-circle">1</div>
+                    <div class="step-label">Personnel<br>Requisition</div>
+                </div>
+                <div class="arrow"></div>
+
+                <div class="step" data-step="2">
+                    <div class="step-circle">2</div>
+                    <div class="step-label">Recruitment &<br>Selection</div>
+                </div>
+                <div class="arrow"></div>
+
+                <div class="step" data-step="3">
+                    <div class="step-circle">3</div>
+                    <div class="step-label">Hiring &<br>Onboarding</div>
+                </div>
+                <div class="arrow"></div>
+
+                <div class="step" data-step="4">
+                    <div class="step-circle">4</div>
+                    <div class="step-label">Master Data &<br>Actions</div>
+                </div>
+                <div class="arrow"></div>
+
+                <div class="step" data-step="5">
+                    <div class="step-circle">5</div>
+                    <div class="step-label">Payroll &<br>Benefits</div>
+                </div>
+                <div class="arrow"></div>
+
+                <div class="step" data-step="6">
+                    <div class="step-circle">6</div>
+                    <div class="step-label">Termination &<br>Offboarding</div>
+                </div>
+            </div>
+
+            <div class="details-section">
+                <!-- Step 1: Personnel Requisition -->
+                <div class="step-details active" data-step="1">
+                    <div class="detail-card">
+                        <h3>Personnel Requisition / Vacancy</h3>
+                        <p>The starting point of the recruitment cycle. An internal document used to inform HR of the need to hire an employee for a specific position.</p>
+                        <div class="info-box">
+                            <h4>Key Information</h4>
+                            <p><strong>T-Codes:</strong> PB10 (Create Vacancy) | PBA0 (Process Vacancy)</p>
+                        </div>
+                        <h4 style="color: #667eea; margin-top: 20px; font-size: 1em;">Requisition Types</h4>
+                        <ul class="detail-list">
+                            <li>Internal Requisition - Transfer/Promotion</li>
+                            <li>External Requisition - New hire from outside</li>
+                            <li>Job-Specific Requisition - Linked to a position</li>
+                            <li>General Requisition - Not yet position-specific</li>
+                        </ul>
+                    </div>
+                </div>
+
+                <div class="step-details active" data-step="1">
+                    <div class="detail-card">
+                        <h3>Key Fields</h3>
+                        <table class="transaction-table">
+                            <tr>
+                                <th>Field</th>
+                                <th>Description</th>
+                            </tr>
+                            <tr>
+                                <td>Position/Job ID</td>
+                                <td>ID of vacant position</td>
+                            </tr>
+                            <tr>
+                                <td>Organizational Unit</td>
+                                <td>Department/section</td>
+                            </tr>
+                            <tr>
+                                <td>Required Date</td>
+                                <td>Needed by this date</td>
+                            </tr>
+                            <tr>
+                                <td>Reason</td>
+                                <td>New/Replacement/Project</td>
+                            </tr>
+                            <tr>
+                                <td>Qualifications</td>
+                                <td>Required skills & experience</td>
+                            </tr>
+                            <tr>
+                                <td>Salary Range</td>
+                                <td>Budget information</td>
+                            </tr>
+                        </table>
+                        <div class="action-buttons" style="margin-top: 20px;">
+                            <button class="btn btn-primary">Create Requisition</button>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Step 2: Recruitment & Selection -->
+                <div class="step-details" data-step="2">
+                    <div class="detail-card">
+                        <h3>Recruitment & Applicant Selection</h3>
+                        <p>Process of issuing Request for Application (RFA) to potential candidates and evaluating their qualifications.</p>
+                        <div class="info-box">
+                            <h4>Key T-Codes</h4>
+                            <p><strong>HR41:</strong> Create RFA<br><strong>HR42:</strong> Change RFA<br><strong>HR47:</strong> Enter Application<br><strong>HR49:</strong> Skill Comparison<br><strong>HR61:</strong> Candidate Evaluation</p>
+                        </div>
+                        <h4 style="color: #667eea; margin-top: 20px; font-size: 1em;">Evaluation Criteria</h4>
+                        <ul class="detail-list">
+                            <li>Experience - Competitiveness vs requirements</li>
+                            <li>Skills - Competency assessment</li>
+                            <li>Availability - Start date flexibility</li>
+                            <li>Fit - Cultural alignment</li>
+                        </ul>
+                    </div>
+                </div>
+
+                <div class="step-details" data-step="2">
+                    <div class="detail-card">
+                        <h3>RFA Process Steps</h3>
+                        <table class="transaction-table">
+                            <tr>
+                                <th>T-Code</th>
+                                <th>Action</th>
+                                <th>Description</th>
+                            </tr>
+                            <tr>
+                                <td><span class="transaction-code">HR41</span></td>
+                                <td>Create RFA</td>
+                                <td>Enter role, skills, deadline</td>
+                            </tr>
+                            <tr>
+                                <td><span class="transaction-code">HR42</span></td>
+                                <td>Change RFA</td>
+                                <td>Modify details</td>
+                            </tr>
+                            <tr>
+                                <td><span class="transaction-code">HR43</span></td>
+                                <td>Display RFA</td>
+                                <td>View issued RFAs</td>
+                            </tr>
+                            <tr>
+                                <td><span class="transaction-code">HR47</span></td>
+                                <td>Enter Application</td>
+                                <td>Record candidate qualifications</td>
+                            </tr>
+                            <tr>
+                                <td><span class="transaction-code">HR49</span></td>
+                                <td>Skill Comparison</td>
+                                <td>Compare applications</td>
+                            </tr>
+                        </table>
+                    </div>
+                </div>
+
+                <!-- Step 3: Hiring & Onboarding -->
+                <div class="step-details" data-step="3">
+                    <div class="detail-card">
+                        <h3>Hiring & Onboarding</h3>
+                        <p>The selected candidate is hired and onboarded into the system. A new personnel number is created and the employee becomes active.</p>
+                        <div class="info-box">
+                            <h4>Key Information</h4>
+                            <p><strong>T-Code:</strong> PA40 (Personnel Actions - Hire)<br><strong>Action Type:</strong> 101 (Hire)</p>
+                        </div>
+                        <h4 style="color: #667eea; margin-top: 20px; font-size: 1em;">Hiring Steps</h4>
+                        <ul class="detail-list">
+                            <li>Issue Job Offer to selected candidate</li>
+                            <li>Acceptance & Document Collection</li>
+                            <li>Create PA40 Action (Hire)</li>
+                            <li>Assign Personnel Number</li>
+                            <li>Set Employee Status to Active</li>
+                            <li>Onboarding & System Training</li>
+                        </ul>
+                    </div>
+                </div>
+
+                <div class="step-details" data-step="3">
+                    <div class="detail-card">
+                        <h3>Onboarding Infotypes</h3>
+                        <table class="transaction-table">
+                            <tr>
+                                <th>Infotype</th>
+                                <th>Description</th>
+                            </tr>
+                            <tr>
+                                <td><span class="transaction-code">IT0001</span></td>
+                                <td>Organizational Assignment</td>
+                            </tr>
+                            <tr>
+                                <td><span class="transaction-code">IT0002</span></td>
+                                <td>Personal Data</td>
+                            </tr>
+                            <tr>
+                                <td><span class="transaction-code">IT0006</span></td>
+                                <td>Addresses</td>
+                            </tr>
+                            <tr>
+                                <td><span class="transaction-code">IT0008</span></td>
+                                <td>Basic Pay</td>
+                            </tr>
+                            <tr>
+                                <td><span class="transaction-code">IT0009</span></td>
+                                <td>Bank Details</td>
+                            </tr>
+                        </table>
+                        <div class="action-buttons" style="margin-top: 20px;">
+                            <button class="btn btn-primary">Execute Hiring Action</button>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Step 4: Master Data & Actions -->
+                <div class="step-details" data-step="4">
+                    <div class="detail-card">
+                        <h3>Employee Master Data Maintenance</h3>
+                        <p>Recording, updating, and managing all employee-related information throughout their entire lifecycle.</p>
+                        <div class="info-box">
+                            <h4>Key T-Codes</h4>
+                            <p><strong>PA30:</strong> Maintain Master Data<br><strong>PA20:</strong> Display Master Data<br><strong>PA40:</strong> Personnel Actions</p>
+                        </div>
+                        <h4 style="color: #667eea; margin-top: 20px; font-size: 1em;">Movement Action Types</h4>
+                        <ul class="detail-list">
+                            <li>101: Hire - Create new personnel</li>
+                            <li>103: Termination - Set to Inactive</li>
+                            <li>105: Promotion - Update position/pay</li>
+                            <li>107: Transfer - Change area/position</li>
+                            <li>122: Pay Change - Update salary</li>
+                        </ul>
+                    </div>
+                </div>
+
+                <div class="step-details" data-step="4">
+                    <div class="detail-card">
+                        <h3>Master Data Objects</h3>
+                        <table class="transaction-table">
+                            <tr>
+                                <th>Master Data</th>
+                                <th>Purpose</th>
+                            </tr>
+                            <tr>
+                                <td>Personnel Master</td>
+                                <td>Employee information (pay, org, benefits)</td>
+                            </tr>
+                            <tr>
+                                <td>Organizational Structure</td>
+                                <td>Company org units & hierarchy</td>
+                            </tr>
+                            <tr>
+                                <td>Jobs & Positions</td>
+                                <td>Role classification</td>
+                            </tr>
+                            <tr>
+                                <td>Cost Centers</td>
+                                <td>Where costs are incurred</td>
+                            </tr>
+                            <tr>
+                                <td>Time Management</td>
+                                <td>Work schedules & attendance</td>
+                            </tr>
+                        </table>
+                        <div class="action-buttons" style="margin-top: 20px;">
+                            <button class="btn btn-primary">Maintain Employee Data</button>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Step 5: Payroll & Benefits -->
+                <div class="step-details" data-step="5">
+                    <div class="detail-card">
+                        <h3>Payroll Processing & Benefits</h3>
+                        <p>Calculating employee salaries, allowances, deductions, and statutory contributions. This is the Three-Way Payroll Integration.</p>
+                        <div class="info-box">
+                            <h4>Key T-Codes</h4>
+                            <p><strong>PE01:</strong> Payroll Driver<br><strong>PT60:</strong> Time Evaluation<br><strong>PC00_M99_CALC:</strong> Payroll Calculation</p>
+                        </div>
+                        <h4 style="color: #667eea; margin-top: 20px; font-size: 1em;">Three-Way Payroll Integration</h4>
+                        <ul class="detail-list">
+                            <li>1st Point: Employee Master Data (PA30/PA40)</li>
+                            <li>2nd Point: Time Evaluation Results (PT60)</li>
+                            <li>3rd Point: Payroll Run Results (PE01)</li>
+                        </ul>
+                    </div>
+                </div>
+
+                <div class="step-details" data-step="5">
+                    <div class="detail-card">
+                        <h3>Payroll Run Process</h3>
+                        <table class="transaction-table">
+                            <tr>
+                                <th>Step</th>
+                                <th>Action</th>
+                            </tr>
+                            <tr>
+                                <td>1</td>
+                                <td>Navigate to PE01 & enter payroll area/period</td>
+                            </tr>
+                            <tr>
+                                <td>2</td>
+                                <td>Select employee selection criteria</td>
+                            </tr>
+                            <tr>
+                                <td>3</td>
+                                <td>Run simulation payroll first</td>
+                            </tr>
+                            <tr>
+                                <td>4</td>
+                                <td>Verify gross pay, deductions, compliance</td>
+                            </tr>
+                            <tr>
+                                <td>5</td>
+                                <td>Execute live payroll run</td>
+                            </tr>
+                            <tr>
+                                <td>6</td>
+                                <td>Post results to FI accounting</td>
+                            </tr>
+                        </table>
+                        <div class="action-buttons" style="margin-top: 20px;">
+                            <button class="btn btn-primary">Run Payroll</button>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Step 6: Termination & Offboarding -->
+                <div class="step-details" data-step="6">
+                    <div class="detail-card">
+                        <h3>Termination & Offboarding</h3>
+                        <p>Final step in the HR lifecycle. Completes the full & final settlement and ensures all dues, deductions, and statutory obligations are processed.</p>
+                        <div class="info-box">
+                            <h4>Key T-Codes</h4>
+                            <p><strong>PA40:</strong> Personnel Actions (Termination)<br><strong>F110:</strong> Automatic Payment Program<br><strong>F-53:</strong> Manual Payment</p>
+                        </div>
+                        <h4 style="color: #667eea; margin-top: 20px; font-size: 1em;">Termination Steps</h4>
+                        <ul class="detail-list">
+                            <li>Initiate Termination Action in PA40</li>
+                            <li>Update Infotypes (0000, 0001, 0003)</li>
+                            <li>Record exit details & last working day</li>
+                            <li>Stop future payroll processing</li>
+                            <li>Trigger final settlement process</li>
+                            <li>Process final payments</li>
+                        </ul>
+                    </div>
+                </div>
+
+                <div class="step-details" data-step="6">
+                    <div class="detail-card">
+                        <h3>Final Settlement</h3>
+                        <table class="transaction-table">
+                            <tr>
+                                <th>Component</th>
+                                <th>Description</th>
+                            </tr>
+                            <tr>
+                                <td>Final Salary</td>
+                                <td>Salary up to last working day</td>
+                            </tr>
+                            <tr>
+                                <td>Leave Encashment</td>
+                                <td>Payment for unused leave</td>
+                            </tr>
+                            <tr>
+                                <td>Gratuity</td>
+                                <td>Severance payment (if applicable)</td>
+                            </tr>
+                            <tr>
+                                <td>Deductions</td>
+                                <td>Taxes, PF, insurance, loans</td>
+                            </tr>
+                            <tr>
+                                <td>Net Payment</td>
+                                <td>Final amount to employee</td>
+                            </tr>
+                        </table>
+                        <div class="action-buttons" style="margin-top: 20px;">
+                            <button class="btn btn-secondary">View Settlement Details</button>
+                            <button class="btn btn-primary">Process Final Payment</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="legend">
+                <div class="legend-item">
+                    <div class="legend-color" style="background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);"></div>
+                    <span>Default Step</span>
+                </div>
+                <div class="legend-item">
+                    <div class="legend-color" style="background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);"></div>
+                    <span>Active Step</span>
+                </div>
+                <div class="legend-item">
+                    <div class="legend-color" style="background: #f8f9fa;"></div>
+                    <span>Information Panel</span>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <footer>
+        <p>Hire-to-Retire (H2R) Employee Lifecycle Manager | Based on SAP HR/HCM Module Documentation</p>
+        <p style="margin-top: 10px; opacity: 0.8;">(c) 2026 Employee Lifecycle Management System</p>
+    </footer>
+
+    <script>
+        const steps = document.querySelectorAll('.step');
+        const detailsContainers = document.querySelectorAll('.step-details');
+
+        steps.forEach(step => {
+            step.addEventListener('click', function() {
+                const stepNumber = this.getAttribute('data-step');
+                
+                // Remove active class from all steps
+                steps.forEach(s => s.classList.remove('active'));
+                
+                // Add active class to clicked step
+                this.classList.add('active');
+                
+                // Hide all details
+                detailsContainers.forEach(detail => {
+                    detail.classList.remove('active');
+                });
+                
+                // Show details for selected step
+                const selectedDetails = document.querySelectorAll(`[data-step="${stepNumber}"]`);
+                selectedDetails.forEach(detail => {
+                    detail.classList.add('active');
+                });
+            });
+        });
+
+        // Add button interactivity
+        const buttons = document.querySelectorAll('.btn');
+        buttons.forEach(button => {
+            button.addEventListener('click', function() {
+                const action = this.textContent;
+                showNotification(`${action} - Feature coming soon!`);
+            });
+        });
+
+        function showNotification(message) {
+            // Create notification element
+            const notification = document.createElement('div');
+            notification.style.cssText = `
+                position: fixed;
+                bottom: 30px;
+                right: 30px;
+                background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+                color: white;
+                padding: 15px 25px;
+                border-radius: 8px;
+                box-shadow: 0 5px 20px rgba(0, 0, 0, 0.2);
+                z-index: 1000;
+                animation: slideUp 0.3s ease;
+            `;
+            notification.textContent = message;
+            document.body.appendChild(notification);
+            
+            // Remove after 3 seconds
+            setTimeout(() => {
+                notification.style.animation = 'slideDown 0.3s ease';
+                setTimeout(() => notification.remove(), 300);
+            }, 3000);
+        }
+
+        // Add animation styles
+        const style = document.createElement('style');
+        style.textContent = `
+            @keyframes slideUp {
+                from {
+                    transform: translateY(100px);
+                    opacity: 0;
+                }
+                to {
+                    transform: translateY(0);
+                    opacity: 1;
+                }
+            }
+            @keyframes slideDown {
+                from {
+                    transform: translateY(0);
+                    opacity: 1;
+                }
+                to {
+                    transform: translateY(100px);
+                    opacity: 0;
+                }
+            }
+        `;
+        document.head.appendChild(style);
+
+        // Log app initialization
+        console.log('H2R Employee Lifecycle Manager loaded successfully!');
+    </script>
+</body>
+</html>
